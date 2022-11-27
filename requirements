@@ -1,14 +1,7 @@
 numpy==1.21.5
 cv2==4.6.0
-import sklearn # For Machine Learning
-import keras # For CNN
-import tensorflow # For CNN
-from tensorflow import keras # For CNN
-import matplotlib.pyplot as plt # For Data Visualization
-from sklearn.model_selection import train_test_split # For splitting the data into training and testing set
-from keras.models import Sequential # For CNN
-from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization # For adding layers to CNN
-from tensorflow.keras.optimizers import Adam # For Learning Rate
-from keras.callbacks import ModelCheckpoint, EarlyStopping # For Saving Model and Stopping Early if needed
-from csv import DictReader # For Reading the CSV
-from tensorflow.keras.applications import ResNet50 # For using ResNet-50 Model
+scikit-learn==1.0.2
+keras==1.1.3
+tensorflow==2.11.0
+matplotlib==3.5.2
+pandas==1.4.4
