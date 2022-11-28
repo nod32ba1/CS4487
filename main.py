@@ -37,8 +37,8 @@ def getData():
         if(len(trainX)%(0.1*l)==0):print(f'process: {len(trainX)/l}%**')
     return np.asarray(trainX), trainY
 
-with zipfile.ZipFile("data.zip", 'r') as zip_ref:
-    zip_ref.extractall()
+# with zipfile.ZipFile("data.zip", 'r') as zip_ref:
+#     zip_ref.extractall()
 all_X,all_Y = getData()
 trainX, testX, trainY, testY = train_test_split(all_X,all_Y,test_size=0.2, random_state=4487)
 print(trainX.shape)
