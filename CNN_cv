@@ -44,42 +44,48 @@ all_X,all_Y = getData()
 trainX, testX, trainY, testY = train_test_split(all_X,all_Y,test_size=0.2, random_state=4487)
 print(trainX.shape)
 print(trainY.shape)
+epochs = 50
 dropouts = [0.2,0.25]
 learning_rates = [1e-5,3e-4,1e-3]
 batch_sizes = [8,16,32,64]
 
 # CNN
-print('working on CNN model')
-model = Sequential()
-model.add(Conv2D(32, 7, activation = 'relu', padding = 'same', input_shape = (150, 150, 3))) # Add a convulation layer with 7x7 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+for do in dropouts:
+    for lr in learning_rates:
+        for bs in batch_sizes:
+            print('CURRENT PROGRESS:',f'dropout={do} learning_rate={lr} batch_size={bs}')
+            model = Sequential()
+            model.add(Conv2D(32, 7, activation = 'relu', padding = 'same', input_shape = (150, 150, 3))) # Add a convulation layer with 7x7 kernel
+            model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
 
-model.add(Conv2D(32, 5, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 5x5 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+            model.add(Conv2D(32, 5, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 5x5 kernel
+            model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
 
-model.add(Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+            model.add(Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
+            model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
 
-model.add(Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+            model.add(Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
+            model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
 
-model.add(Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+            model.add(Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
+            model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
 
-model.add(MaxPooling2D()) # Downsample the input by taking maximum value
-model.add(Flatten()) # Flattens the input
+            model.add(MaxPooling2D()) # Downsample the input by taking maximum value
+            model.add(Flatten()) # Flattens the input
 
-model.add(Dense(128, activation = 'relu', kernel_initializer = 'he_uniform')) # output = activation(dot(input, kernel) + bias)
-model.add(Dropout(0.2)) # To prevent Overfitting
-model.add(Dense(1, activation = 'sigmoid')) # output = activation(dot(input, kernel) + bias)
+            model.add(Dense(128, activation = 'relu', kernel_initializer = 'he_uniform')) # output = activation(dot(input, kernel) + bias)
+            model.add(Dropout(do)) # To prevent Overfitting
+            model.add(Dense(1, activation = 'sigmoid')) # output = activation(dot(input, kernel) + bias)
 
 
-model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=3e-4), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
+            model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=lr), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
 
-early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
+            early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
 
-checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
+            checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
 
-CNN_hist=model.fit(trainX,trainY,epochs=50,batch_size = 64,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
+            CNN_hist=model.fit(trainX,trainY,epochs=epochs,batch_size = bs,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
 
-plotPerformance(CNN_hist, "CNN LR=3e-4 BS=64")
+            plotPerformance(CNN_hist, f"CNN DO={do} LR={lr} BS={bs}")
+            t = np.reshape(np.hstack((np.array(CNN_hist.history['accuracy']),np.array(CNN_hist.history['val_accuracy']),np.array(CNN_hist.history['loss']),np.array(CNN_hist.history['val_loss']))),(epochs,4),'F')
+            np.save(f"CNN DO={do} LR={lr} BS={bs}",t)
