@@ -35,7 +35,7 @@ def getData():
     l = len(real+fake_all)
     for img_path in (real+fake_all):
         trainX.append(np.array(cv2.resize(cv2.imread(img_path),(150,150))) / 255.0)
-        if(len(trainX)%(0.1*l)==0):print(f'process: {len(trainX)/l}%**')
+        if(len(trainX)%(0.1*l)==0):print(f'process: {100*len(trainX)/l}%**')
     return np.asarray(trainX), trainY
 
 # with zipfile.ZipFile("data.zip", 'r') as zip_ref:
