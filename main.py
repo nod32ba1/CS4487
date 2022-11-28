@@ -3,15 +3,15 @@ import numpy as np # Helps in storing large data in NP Arrays
 import time
 import cv2 # For Image Processing
 import sklearn # For Machine Learning
-import keras # For CNN
-import tensorflow # For CNN
+# import keras # For CNN
+import tensorflow as tf # For CNN
 from tensorflow import keras # For CNN
 import matplotlib.pyplot as plt # For Data Visualization
 from sklearn.model_selection import train_test_split # For splitting the data into training and testing set
-from keras.models import Sequential # For CNN
-from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization # For adding layers to CNN
+from tensorflow.keras.models import Sequential # For CNN
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization # For adding layers to CNN
 from tensorflow.keras.optimizers import Adam # For Learning Rate
-from keras.callbacks import ModelCheckpoint, EarlyStopping # For Saving Model and Stopping Early if needed
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping # For Saving Model and Stopping Early if needed
 from csv import DictReader # For Reading the CSV
 from tensorflow.keras.applications import ResNet50 # For using ResNet-50 Model
 
