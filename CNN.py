@@ -74,13 +74,13 @@ model.add(Dense(1, activation = 'sigmoid')) # output = activation(dot(input, ker
 
 model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=3e-4), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
 
-early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 10, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
+early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
 
 checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
 
-CNN_hist=model.fit(trainX,trainY,epochs=50,batch_size = 32,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
+CNN_hist=model.fit(trainX,trainY,epochs=50,batch_size = 64,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
 
-plotPerformance(CNN_hist, "CNN LR=3e-4 BS=32")
+plotPerformance(CNN_hist, "CNN LR=3e-4 BS=64")
                 
                 
               
