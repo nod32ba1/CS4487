@@ -80,7 +80,7 @@ checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, sa
 
 CNN_hist=model.fit(trainX,trainY,epochs=50,batch_size = 32,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
 
-plotPerformance(CNN_hist, "CNN LR=3e-4 BS=32)
+plotPerformance(CNN_hist, "CNN LR=3e-4 BS=32")
                 
                 
               
