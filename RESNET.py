@@ -28,8 +28,8 @@ def plotPerformance(hist,title):
     plt.show()
 
 def getData():
-    real = glob("data/original/*")
-    fake_all = glob("data/manipulated/*")
+    real = glob("../data/original/*")
+    fake_all = glob("../data/manipulated/*")
     trainX = []
     trainY = np.hstack((np.ones(len(real), dtype=int),np.zeros(len(fake_all),dtype=int)))
     l = len(real+fake_all)
