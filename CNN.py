@@ -46,6 +46,11 @@ print(trainX.shape)
 print(trainY.shape)
 
 
+do=0.23
+lr=1e-4
+epoch=5
+bs=64
+
 # CNN
 print('working on CNN model')
 model = Sequential()
@@ -68,19 +73,19 @@ model.add(MaxPooling2D()) # Downsample the input by taking maximum value
 model.add(Flatten()) # Flattens the input
 
 model.add(Dense(128, activation = 'relu', kernel_initializer = 'he_uniform')) # output = activation(dot(input, kernel) + bias)
-model.add(Dropout(0.2)) # To prevent Overfitting
+model.add(Dropout(do)) # To prevent Overfitting
 model.add(Dense(1, activation = 'sigmoid')) # output = activation(dot(input, kernel) + bias)
 
 
-model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=3e-4), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
+model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=lr), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
 
 early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
 
 checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
 
-CNN_hist=model.fit(trainX,trainY,epochs=50,batch_size = 64,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
+CNN_hist=model.fit(trainX,trainY,epochs=epoch,batch_size = bs,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
 
-plotPerformance(CNN_hist, "CNN LR=3e-4 BS=64")
-                
-                
-              
+plotPerformance(CNN_hist, "CNN LR="+str(lr)+" bs="+str(bs))
+t = np.reshape(np.hstack((np.array(CNN_hist.history['accuracy']),np.array(CNN_hist.history['val_accuracy']),np.array(CNN_hist.history['loss']),np.array(CNN_hist.history['val_loss']))),(epoch,4),'F')
+np.save("CNN DO="+str(do)+" LR="+str(lr)+" BS="+str(bs),t)
+
