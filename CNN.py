@@ -90,6 +90,6 @@ checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, sa
 CNN_hist=model.fit(trainX,trainY,epochs=int(epoch),batch_size = int(bs),validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
 
 plotPerformance(CNN_hist, str(do),str(lr),str(bs))
-t = np.reshape(np.hstack((np.array(CNN_hist.history['accuracy']),np.array(CNN_hist.history['val_accuracy']),np.array(CNN_hist.history['loss']),np.array(CNN_hist.history['val_loss']))),(int(epoch),4),'F')
+t = np.reshape(np.hstack((np.array(CNN_hist.history['accuracy']),np.array(CNN_hist.history['val_accuracy']),np.array(CNN_hist.history['loss']),np.array(CNN_hist.history['val_loss']))),(len(CNN_hist.history['accuracy']),4),'F')
 np.save(f"CNN_{do}do{lr}lr{bs}bs",t)
 
