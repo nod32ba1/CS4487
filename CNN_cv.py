@@ -15,7 +15,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping # For Savi
 from csv import DictReader # For Reading the CSV
 from tensorflow.keras.applications import ResNet50 # For using ResNet-50 Model
 
-def plotPerformance(hist,title):
+def plotPerformance(hist,do,lr,bs):
     plt.plot(hist.history["accuracy"])
     plt.plot(hist.history['val_accuracy'])
     plt.plot(hist.history['loss'])
@@ -24,7 +24,7 @@ def plotPerformance(hist,title):
     plt.ylabel("Accuracy")
     plt.xlabel("Epoch")
     plt.legend(["Accuracy","Validation Accuracy","loss","Validation Loss"])
-    plt.savefig(title)
+    plt.savefig(f'CNN_{do}do{lr}lr{bs}bs.png')
     plt.show()
 
 def getData():
@@ -86,6 +86,6 @@ for do in dropouts:
 
             CNN_hist=model.fit(trainX,trainY,epochs=epochs,batch_size = bs,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
 
-            plotPerformance(CNN_hist, f"CNN DO={do} LR={lr} BS={bs}")
+            plotPerformance(CNN_hist, str(do),str(lr),str(bs))
             t = np.reshape(np.hstack((np.array(CNN_hist.history['accuracy']),np.array(CNN_hist.history['val_accuracy']),np.array(CNN_hist.history['loss']),np.array(CNN_hist.history['val_loss']))),(epochs,4),'F')
-            np.save(f"CNN DO={do} LR={lr} BS={bs}",t)
+            np.save(f"CNN_{str(do)}do{str(lr)}lr{str(bs)}bs",t)
