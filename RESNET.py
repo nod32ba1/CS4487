@@ -14,6 +14,7 @@ from tensorflow.keras.optimizers import Adam # For Learning Rate
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping # For Saving Model and Stopping Early if needed
 from csv import DictReader # For Reading the CSV
 from tensorflow.keras.applications import ResNet50 # For using ResNet-50 Model
+from tensorflow.python.keras.models import load_model
 
 def plotPerformance(hist,do,lr,bs):
     plt.plot(hist.history["accuracy"])
@@ -66,8 +67,8 @@ ResNet_model.add(Dense(128, activation = 'relu', kernel_initializer = 'he_unifor
 ResNet_model.add(Dropout(float(do))) # To prevent overfitting
 ResNet_model.add(Dense(1, activation = 'sigmoid')) # output = activation(dot(input, kernel) + bias)
 
-ResNet_model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=float(lr)), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
-
+# ResNet_model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=float(lr)), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
+model = load_model(filepath="ResNet.h5", compile=True)
 early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
 
 checkpoint = ModelCheckpoint("ResNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
