@@ -15,7 +15,7 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping # For Savi
 from csv import DictReader # For Reading the CSV
 from tensorflow.keras.applications import ResNet50 # For using ResNet-50 Model
 
-def plotPerformance(hist,title):
+def plotPerformance(hist,do,lr,bs):
     plt.plot(hist.history["accuracy"])
     plt.plot(hist.history['val_accuracy'])
     plt.plot(hist.history['loss'])
@@ -24,7 +24,7 @@ def plotPerformance(hist,title):
     plt.ylabel("Accuracy")
     plt.xlabel("Epoch")
     plt.legend(["Accuracy","Validation Accuracy","loss","Validation Loss"])
-    plt.savefig(title)
+    plt.savefig(f'RESNET_{do}do{lr}lr{bs}bs.png')
     plt.show()
 
 def getData():
@@ -42,7 +42,18 @@ def getData():
 #     zip_ref.extractall()
 all_X,all_Y = getData()
 trainX, testX, trainY, testY = train_test_split(all_X,all_Y,test_size=0.2, random_state=4487)
+print(trainX.shape)
+print(trainY.shape)
 
+print('Initialising configs...')
+# do=0.23
+# lr=1e-4
+# epoch=5
+# bs=64
+do = input('Please enter the dropout rate: ') 
+lr = input('Please enter the learning rate: ')
+epoch = input('Please enter the # of epochs: ')
+bs = input('Please enter the # of batch size: ')
 ResNet_model = Sequential()
 
 ResNet_model.add(ResNet50(weights='imagenet', include_top=False, classes=2, input_shape=(150,150,3))) # Add a ResNet layer
@@ -52,17 +63,18 @@ ResNet_model.add(MaxPooling2D()) # Downsample the input by taking maximum value
 ResNet_model.add(Flatten()) # Flatten the input
 
 ResNet_model.add(Dense(128, activation = 'relu', kernel_initializer = 'he_uniform')) # output = activation(dot(input, kernel) + bias)
-ResNet_model.add(Dropout(0.2)) # To prevent overfitting
+ResNet_model.add(Dropout(float(do))) # To prevent overfitting
 ResNet_model.add(Dense(1, activation = 'sigmoid')) # output = activation(dot(input, kernel) + bias)
 
-ResNet_model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=3e-4), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
+ResNet_model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=float(lr)), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
 
-early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 10, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
+early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
 
 checkpoint = ModelCheckpoint("ResNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
 
-ResNet_hist=ResNet_model.fit(trainX,trainY,epochs=50,batch_size = 32,validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # Fit the model
+ResNet_hist=ResNet_model.fit(trainX,trainY,epochs=int(epoch),batch_size = int(bs),validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # Fit the model
 
 
-plotPerformance(ResNet_hist,"RESNET LR=3e-4 BS=32")
-
+plotPerformance(ResNet_hist, str(do),str(lr),str(bs))
+t = np.reshape(np.hstack((np.array(ResNet_hist.history['accuracy']),np.array(ResNet_hist.history['val_accuracy']),np.array(ResNet_hist.history['loss']),np.array(ResNet_hist.history['val_loss']))),(len(ResNet_hist.history['accuracy']),4),'F')
+np.save(f"RESNET_{do}do{lr}lr{bs}bs",t)
