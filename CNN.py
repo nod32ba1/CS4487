@@ -1,23 +1,33 @@
-from glob import glob # For Reading Data
+# Installign required packages:
+# pip tensorflow-determinism 
+# pip install numpy
+# pip install opencv-python
+# pip install scikit-learn
+# pip install keras
+# pip install tensorflow
+# pip install matplotlib
+# pip install pandas
+
+# Importing libraries, packages and environment set-up
+from glob import glob # For reading data
 import os
 import random
-import numpy as np # Helps in storing large data in NP Arrays
+import numpy as np # For storing large data in NP Arrays
 import time
-import cv2 # For Image Processing
-import sklearn # For Machine Learning
-# import keras # For CNN
+import cv2 # For image processing
+import sklearn # For machine learning
 import tensorflow as tf # For CNN
 from tensorflow import keras # For CNN
-import matplotlib.pyplot as plt # For Data Visualization
-from sklearn.model_selection import train_test_split # For splitting the data into training and testing set
-from tensorflow.keras.models import Sequential # For CNN
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization # For adding layers to CNN
+import matplotlib.pyplot as plt # For data visualizing
+from sklearn.model_selection import train_test_split # For splitting data into training set and testing set
+from tensorflow.keras.models import Sequential # For NN
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization # For adding CNN convolution layers
 from tensorflow.keras.optimizers import Adam # For Learning Rate
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping # For Saving Model and Stopping Early if needed
-from csv import DictReader # For Reading the CSV
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping # For saving model and stop training model earlier if needed
+from csv import DictReader # For reading CSV
 from tensorflow.keras.applications import ResNet50 # For using ResNet-50 Model
 
-
+# Function of generating graph for performance evaluations
 def plotPerformance(hist,do,lr,bs):
     plt.plot(hist.history["accuracy"])
     plt.plot(hist.history['val_accuracy'])
@@ -27,9 +37,10 @@ def plotPerformance(hist,do,lr,bs):
     plt.ylabel("Accuracy")
     plt.xlabel("Epoch")
     plt.legend(["Accuracy","Validation Accuracy","loss","Validation Loss"])
-    plt.savefig(f'pics/CNN_{do}do{lr}lr{bs}bs.png')
+    plt.savefig(f'CNN_{do}do{lr}lr{bs}bs.png')
     plt.show()
 
+# Function of loading photos as the data
 def getData():
     real = glob("../data/original/*")
     fake_all = glob("../data/manipulated/*")
@@ -41,14 +52,14 @@ def getData():
         if(len(trainX)%(0.1*l)==0):print(f'process: {100*len(trainX)/l}%**')
     return np.asarray(trainX), trainY
 
+# Setting seed for constructing the same (or at least similar) model
 os.environ['TF_CUDNN_DETERMINISTIC']= '1'
 os.environ['PYTHONHASHSEED']= '4487'
 np.random.seed(4487)
 random.seed(4487)
 tf.random.set_seed(4487)
 
-# with zipfile.ZipFile("data.zip", 'r') as zip_ref:
-#     zip_ref.extractall()
+# Main program
 all_X,all_Y = getData()
 trainX, testX, trainY, testY = train_test_split(all_X,all_Y,test_size=0.2, random_state=4487)
 print(trainX.shape)
@@ -67,38 +78,50 @@ bs = input('Please enter the # of batch size: ')
 # CNN
 print('working on CNN model')
 model = Sequential()
-model.add(Conv2D(32, 7, activation = 'relu', padding = 'same', input_shape = (150, 150, 3))) # Add a convulation layer with 7x7 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
 
-model.add(Conv2D(32, 5, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 5x5 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+# First convolutional layer (7x7 kernel)
+model.add(Conv2D(32, 7, activation='relu', padding='same', input_shape=(150,150,3)))
+model.add(BatchNormalization()) # Normalizing input (mean close to 0 & standart deviation close to 1)
 
-model.add(Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+# Second convolutional layer (5x5 kernel)
+model.add(Conv2D(32, 5, activation='relu', padding='same', kernel_initializer='he_uniform')) 
+model.add(BatchNormalization())
 
-model.add(Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+# Third convolutional layer (3x3 kernel)
+model.add(Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_uniform'))
+model.add(BatchNormalization())
 
-model.add(Conv2D(128, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_uniform')) # Add a convulation layer with 3x3 kernel
-model.add(BatchNormalization()) # Normalize the input with mean close to 0 and standart deviation close to 1
+# Forth convolutional layer (3x3 kernel)
+model.add(Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_uniform')) 
+model.add(BatchNormalization()) 
 
-model.add(MaxPooling2D()) # Downsample the input by taking maximum value
-model.add(Flatten()) # Flattens the input
+# Fifth convolutional layer (3x3 kernel)
+model.add(Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_uniform')) 
+model.add(BatchNormalization())
 
-model.add(Dense(128, activation = 'relu', kernel_initializer = 'he_uniform')) # output = activation(dot(input, kernel) + bias)
-model.add(Dropout(float(do))) # To prevent Overfitting
-model.add(Dense(1, activation = 'sigmoid')) # output = activation(dot(input, kernel) + bias)
+model.add(MaxPooling2D()) # Downsample the input
+model.add(Flatten()) # Flatten the input
 
+# Output
+model.add(Dense(128, activation = 'relu', kernel_initializer = 'he_uniform')) 
+model.add(Dropout(float(do))) # For preventing overfitting
+model.add(Dense(1, activation = 'sigmoid'))
 
-model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=float(lr)), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
+# Compiling the model using binary_crossentropy loss function and evalutate accuracy score.
+model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=float(lr)), metrics=['accuracy']) 
 
-early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 10, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
+# Early stop the program if the val_loss does not improve for 5 epochs
+early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) 
 
-checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
+# Saving the best model according to val_accuracy (accuracy of testing)
+checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') 
+
+# Fitting the model
 tf.random.set_seed(4487)
-CNN_hist=model.fit(trainX,trainY,epochs=int(epoch),batch_size = int(bs),validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
+CNN_hist=model.fit(trainX,trainY,epochs=int(epoch),batch_size=int(bs),validation_data=(testX,testY), callbacks=[checkpoint, early_stopping])
 
+# Plot the graph and save the performance
 plotPerformance(CNN_hist, str(do),str(lr),str(bs))
 t = np.reshape(np.hstack((np.array(CNN_hist.history['accuracy']),np.array(CNN_hist.history['val_accuracy']),np.array(CNN_hist.history['loss']),np.array(CNN_hist.history['val_loss']))),(len(CNN_hist.history['accuracy']),4),'F')
-np.save(f"vectors/CNN_{do}do{lr}lr{bs}bs",t)
+np.save(f"CNN_{do}do{lr}lr{bs}bs",t)
 
