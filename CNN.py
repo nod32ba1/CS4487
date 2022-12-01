@@ -1,4 +1,6 @@
 from glob import glob # For Reading Data
+import os
+import random
 import numpy as np # Helps in storing large data in NP Arrays
 import time
 import cv2 # For Image Processing
@@ -14,6 +16,7 @@ from tensorflow.keras.optimizers import Adam # For Learning Rate
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping # For Saving Model and Stopping Early if needed
 from csv import DictReader # For Reading the CSV
 from tensorflow.keras.applications import ResNet50 # For using ResNet-50 Model
+
 
 def plotPerformance(hist,do,lr,bs):
     plt.plot(hist.history["accuracy"])
@@ -37,6 +40,12 @@ def getData():
         trainX.append(np.array(cv2.resize(cv2.imread(img_path),(150,150))) / 255.0)
         if(len(trainX)%(0.1*l)==0):print(f'process: {100*len(trainX)/l}%**')
     return np.asarray(trainX), trainY
+
+os.environ['TF_CUDNN_DETERMINISTIC']= '1'
+os.environ['PYTHONHASHSEED']= '4487'
+np.random.seed(4487)
+random.seed(4487)
+tf.random.set_seed(4487)
 
 # with zipfile.ZipFile("data.zip", 'r') as zip_ref:
 #     zip_ref.extractall()
@@ -86,7 +95,7 @@ model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=float(lr))
 early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
 
 checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
-
+tf.random.set_seed(4487)
 CNN_hist=model.fit(trainX,trainY,epochs=int(epoch),batch_size = int(bs),validation_data=(testX,testY), callbacks=[checkpoint, early_stopping]) # fit the model
 
 plotPerformance(CNN_hist, str(do),str(lr),str(bs))
