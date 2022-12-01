@@ -24,7 +24,6 @@ from tensorflow.keras.models import Sequential # For NN
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout, BatchNormalization # For adding CNN convolution layers
 from tensorflow.keras.optimizers import Adam # For Learning Rate
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping # For saving model and stop training model earlier if needed
-from csv import DictReader # For reading CSV
 from tensorflow.keras.applications import ResNet50 # For using ResNet-50 Model
 
 # Function of generating graph for performance evaluations
