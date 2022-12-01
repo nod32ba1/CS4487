@@ -27,7 +27,7 @@ def plotPerformance(hist,do,lr,bs):
     plt.ylabel("Accuracy")
     plt.xlabel("Epoch")
     plt.legend(["Accuracy","Validation Accuracy","loss","Validation Loss"])
-    plt.savefig(f'CNN_{do}do{lr}lr{bs}bs.png')
+    plt.savefig(f'pics/CNN_{do}do{lr}lr{bs}bs.png')
     plt.show()
 
 def getData():
@@ -92,7 +92,7 @@ model.add(Dense(1, activation = 'sigmoid')) # output = activation(dot(input, ker
 
 model.compile(loss='binary_crossentropy',optimizer=Adam(learning_rate=float(lr)), metrics=['accuracy']) # Compile the model using the specified loss function and learning rate using accuracy score as the evaluation metric.
 
-early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 5, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
+early_stopping = EarlyStopping(monitor = 'val_loss', min_delta = 0, patience = 10, verbose = 0, mode = 'min', restore_best_weights=True) # Stop early if the val_loss does not reduce for 5 epochs
 
 checkpoint = ModelCheckpoint("ConvNet.h5", monitor='val_accuracy', verbose=1, save_best_only=True, save_weights_only=False, mode='auto') # Save the best model with respect to val_accuracy
 tf.random.set_seed(4487)
@@ -100,5 +100,5 @@ CNN_hist=model.fit(trainX,trainY,epochs=int(epoch),batch_size = int(bs),validati
 
 plotPerformance(CNN_hist, str(do),str(lr),str(bs))
 t = np.reshape(np.hstack((np.array(CNN_hist.history['accuracy']),np.array(CNN_hist.history['val_accuracy']),np.array(CNN_hist.history['loss']),np.array(CNN_hist.history['val_loss']))),(len(CNN_hist.history['accuracy']),4),'F')
-np.save(f"CNN_{do}do{lr}lr{bs}bs",t)
+np.save(f"vectors/CNN_{do}do{lr}lr{bs}bs",t)
 
