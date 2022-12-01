@@ -27,7 +27,7 @@ def plotPerformance(hist,do,lr,bs):
     plt.ylabel("Accuracy")
     plt.xlabel("Epoch")
     plt.legend(["Accuracy","Validation Accuracy","loss","Validation Loss"])
-    plt.savefig(f'RESNET_{do}do{lr}lr{bs}bs.png')
+    plt.savefig(f'pics/RESNET_{do}do{lr}lr{bs}bs.png')
     plt.show()
 
 def getData():
@@ -87,4 +87,4 @@ ResNet_hist=ResNet_model.fit(trainX,trainY,epochs=int(epoch),batch_size = int(bs
 
 plotPerformance(ResNet_hist, str(do),str(lr),str(bs))
 t = np.reshape(np.hstack((np.array(ResNet_hist.history['accuracy']),np.array(ResNet_hist.history['val_accuracy']),np.array(ResNet_hist.history['loss']),np.array(ResNet_hist.history['val_loss']))),(len(ResNet_hist.history['accuracy']),4),'F')
-np.save(f"RESNET_{do}do{lr}lr{bs}bs",t)
+np.save(f"vectors/RESNET_{do}do{lr}lr{bs}bs",t)
