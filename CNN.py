@@ -1,4 +1,4 @@
-# Installign required packages:
+# Installing required packages:
 # pip tensorflow-determinism 
 # pip install numpy
 # pip install opencv-python
@@ -37,13 +37,13 @@ def plotPerformance(hist,do,lr,bs):
     plt.ylabel("Accuracy")
     plt.xlabel("Epoch")
     plt.legend(["Accuracy","Validation Accuracy","loss","Validation Loss"])
-    plt.savefig(f'CNN_{do}do{lr}lr{bs}bs.png')
+    plt.savefig(f'pics/CNN_{do}do{lr}lr{bs}bs.png')
     plt.show()
 
 # Function of loading photos as the data
 def getData():
-    real = glob("../data/original/*")
-    fake_all = glob("../data/manipulated/*")
+    real = glob("../vectors/original/*")
+    fake_all = glob("../vectors/manipulated/*")
     trainX = []
     trainY = np.hstack((np.ones(len(real), dtype=int),np.zeros(len(fake_all),dtype=int)))
     l = len(real+fake_all)
@@ -123,5 +123,5 @@ CNN_hist=model.fit(trainX,trainY,epochs=int(epoch),batch_size=int(bs),validation
 # Plot the graph and save the performance
 plotPerformance(CNN_hist, str(do),str(lr),str(bs))
 t = np.reshape(np.hstack((np.array(CNN_hist.history['accuracy']),np.array(CNN_hist.history['val_accuracy']),np.array(CNN_hist.history['loss']),np.array(CNN_hist.history['val_loss']))),(len(CNN_hist.history['accuracy']),4),'F')
-np.save(f"CNN_{do}do{lr}lr{bs}bs",t)
+np.save(f"vectors/CNN_{do}do{lr}lr{bs}bs",t)
 
