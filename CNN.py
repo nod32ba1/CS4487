@@ -41,8 +41,8 @@ def plotPerformance(hist,do,lr,bs):
 
 # Function of loading photos as the data
 def getData():
-    real = glob("../vectors/original/*")
-    fake_all = glob("../vectors/manipulated/*")
+    real = glob("../data/original/*")
+    fake_all = glob("../data/manipulated/*")
     trainX = []
     trainY = np.hstack((np.ones(len(real), dtype=int),np.zeros(len(fake_all),dtype=int)))
     l = len(real+fake_all)
